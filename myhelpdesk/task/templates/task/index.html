@@ -1,10 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Main page</title>
-</head>
-<body>
-Hello this my template
-</body>
-</html>
+{% extends 'task/base.html' %}
+
+{% block content %}
+<!-- category line -->
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        {% if cat_selected == 0 %}
+            <li class="selected">All tasks</li>
+        {% else %}
+            <li><a href="{% url 'index' %}">All tasks</a></li>
+        {% endif %}
+
+        {% for c in stats %}
+            {% if c.pk == cat_selected %}
+                <li class="selected">{{ c.name }}</li>
+            {% else %}
+                <li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+    </header>
+</div>
+<!-- category line end -->
+<div class="container px-4 py-5" id="featured-3">
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="feature col">
+            <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+
+            </div>
+            {% for t in tasks %}
+            <h3 class="fs-2">{{ t.title }}</h3>
+            <a href="{% url 'task' t.pk %}" class="icon-link d-inline-flex align-items-center">
+                Detail
+                <svg class="bi" width="1em" height="1em">
+                    <use xlink:href="#chevron-right"></use>
+                </svg>
+            </a>
+            {% empty %}
+            <p> No tasks there. </p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

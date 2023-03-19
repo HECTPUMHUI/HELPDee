@@ -1,0 +1,25 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+
+<div class="container px-4 py-5" id="featured-3">
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="feature col">
+            <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+            </div>
+            <h3 class="fs-2">{{ task.title }}</h3>
+            <p><b>Description:</b> {{ task.description }}</p>
+            <p><b>Created:</b> {{ task.time_created|date:"d-m-Y H:i:s"}}</p>
+            <p><b>Status:</b> {{ task.status }}</p>
+            <p><b>Process:</b> {{ task.completed }}</p>
+            <a href="/" class="icon-link d-inline-flex align-items-center">
+                Task list
+                <svg class="bi" width="1em" height="1em">
+                    <use xlink:href="#chevron-right"></use>
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

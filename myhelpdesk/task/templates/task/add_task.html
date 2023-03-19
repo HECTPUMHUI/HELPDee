@@ -1,0 +1,30 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form action="{% url 'add_task' %}" method="post">
+    {% csrf_token %}
+    <p><label class="form-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}: </label> {{ form.title }}
+    </p>
+    <div class="form-error">{{ form.title.errors }}</div>
+
+    <p><label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}: </label>
+        {{form.description }}</p>
+    <div class="form-error">{{ form.description.errors }}</div>
+
+    <p><label class="form-label" for="{{ form.cat.id_for_label }}">{{ form.status.label }}: </label>
+        {{form.status }}</p>
+    <div class="form-error">{{ form.status.errors }}</div>
+
+    <p><label class="form-label" for="{{ form.completed.id_for_label }}">{{ form.completed.label }}: </label>
+        {{form.completed }} </p>
+    <div class="form-error">{{ form.completed.errors }}</div>
+    <p><label class="form-label" for="{{ form.user.id_for_label }}">{{ form.user.label }}: </label> {{ form.user }}</p>
+    <div class="form-error">{{ form.user.errors }}</div>
+
+    <button type="submit" class="btn btn-primary btn-lg btn-block">Add new task</button>
+</form>
+
+
+{% endblock %}
