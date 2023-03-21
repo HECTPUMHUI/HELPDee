@@ -19,6 +19,13 @@ class Task(models.Model):
         ordering = ['-time_created']
 
 
+class Comment(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField(max_length=1000)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+
 class Status(models.Model):
     name = models.CharField(max_length=100, db_index=True)
 

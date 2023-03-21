@@ -1,8 +1,8 @@
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
 
-from task.forms import AddTaskForm
+from task.forms import AddTaskForm, CommentForm
 from task.models import Task, Status
 
 
@@ -27,20 +27,6 @@ class ShowTask(DetailView):
     context_object_name = 'task'
     extra_context = {'title': 'Task'}
 
-
-# def add_task(request):
-#     if request.method == 'POST':
-#         form = AddTaskForm(request.POST)
-#         if form.is_valid():
-#             try:
-#                 Task.objects.create(**form.cleaned_data)
-#                 return redirect('index')
-#             except:
-#                 form.add_error(None, '!! Add  task error !!')
-#
-#     else:
-#         form = AddTaskForm()
-#     return render(request, 'task/add_task.html', {'form': form, 'title': 'Add Task'})
 
 def add_task(request):
     if request.method == 'POST':
@@ -74,3 +60,18 @@ def show_status(request, status_id):
     }
 
     return render(request, 'task/index.html', context=context)
+
+
+def add_comment(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.task = task
+            comment.save()
+            return redirect('task', task_id=task.id)
+    else:
+        form = CommentForm()
+    return render(request, 'task/add_comment.html', {'form': form})
