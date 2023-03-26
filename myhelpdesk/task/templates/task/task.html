@@ -8,18 +8,21 @@
             <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
             </div>
             <h3 class="fs-2">{{ task.title }}</h3>
-            <p><b>Author:</b> {{ task.user }}</p>
-            <p><b>Description:</b> {{ task.description }}</p>
-            <p><b>Created:</b> {{ task.time_created|date:"d-m-Y H:i:s"}}</p>
-            <p><b>Status:</b> {{ task.status }}</p>
-            <p><b>Process:</b> {{ task.process }}</p>
-            <p><b>Reason for reject:</b> {{ task.reason }}</p>
-            <p><b>Hidden:</b> {{ task.hidden }}</p>
-            {% if request.user.is_authenticated %}
-            <a href="{% url 'add_comment' task_id=task.id %}" class="btn btn-info">Додати коментар</a>
-            <a href="{% url 'edit_task' task_id=task.id %}" class="btn btn-info">Edit Task</a>
+            <p><b>Автор:</b> {{ task.user }}</p>
+            <p><b>Опис:</b> {{ task.description }}</p>
+            <p><b>Створено:</b> {{ task.time_created|date:"d-m-Y H:i:s"}}</p>
+            <p><b>Рівень важливості:</b> {{ task.status }}</p>
+            <p><b>Статус:</b> {{ task.process }}</p>
+            {% if task.reason %}
+                <p><b>Причина відхилення:</b> {{ task.reason }}</p>
+            {% endif %}
+            {% if user.is_authenticated and user == task.user %}
+                {% if task.process == 'in_progress' %}
+                    <a href="{% url 'add_comment' task_id=task.id %}" class="btn btn-info">Додати коментар</a>
+                {% endif %}
+            <a href="{% url 'edit_task' task_id=task.id %}" class="btn btn-info">Редагувати</a>
             {% else %}
-            <h2>Login please for comments</h2>
+            <h2>Для перегляду коментарів, увійдіть</h2>
             {% endif %}
             <br>
             <br>

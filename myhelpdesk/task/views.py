@@ -116,7 +116,7 @@ def task_reject(request, task_id):
 
 def task_restore(request, task_id):
     task = get_object_or_404(Task, id=task_id)
-    task.process = 'in_progress'
+    task.process = 'process of recovery'
     task.hidden = True
     task.save()
     RestoreTask.objects.create(task=task)
@@ -127,7 +127,7 @@ class RestoreTaskList(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Task
     template_name = 'task/restore_list.html'
     context_object_name = 'restored_tasks'
-    paginate_by = 10
+    # paginate_by = 10
 
     def test_func(self):
         return self.request.user.is_staff

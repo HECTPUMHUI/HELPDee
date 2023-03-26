@@ -8,6 +8,7 @@ class Task(models.Model):
         ('in_progress', 'In Progress'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
+        ('process of recovery', 'Process of Recovery'),
     )
 
     title = models.CharField(max_length=255)
