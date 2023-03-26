@@ -1,0 +1,65 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+<h1>Restored Tasks List</h1>
+
+<div class="container py-5">
+    <div class="row row-cols-3 g-4">
+
+        {% for t in restored_tasks %}
+
+
+        <div class="col">
+            <div class="card">
+                {% if t.status.name == 'Low' %}
+                <div class="card-body bg-lows">
+                    <h5 class="card-title">{{ t.title }}</h5>
+                    <p class="card-text">{{ t.description }}</p>
+                    <p class="card-text">Рівень важливості: {{ t.status }}</p>
+                    <p class="card-text">Статус: {{ t.process }}</p>
+                    {% if not t.process == 'in_progress'%}
+                    <p class="card-text">Причина відмови: {{ t.reason }}</p>
+                    {%endif%}
+                    <a href="{% url 'task' t.pk %}" class="btn btn-primary">Повна інформація</a>
+                </div>
+                {% elif t.status.name == 'Medium' %}
+                <div class="card-body bg-mediums">
+                    <h5 class="card-title">{{ t.title }}</h5>
+                    <p class="card-text">{{ t.description }}</p>
+                    <p class="card-text">Рівень важливості: {{ t.status }}</p>
+                    <p class="card-text">Статус: {{ t.process }}</p>
+                    {% if not t.process == 'in_progress'%}
+                    <p class="card-text">Причина відмови: {{ t.reason }}</p>
+                    {%endif%}
+                    <a href="{% url 'task' t.pk %}" class="btn btn-primary">Повна інформація</a>
+                </div>
+                {% elif t.status.name == 'High' %}
+                <div class="card-body bg-highs">
+                    <h5 class="card-title">{{ t.title }}</h5>
+                    <p class="card-text">{{ t.description }}</p>
+                    <p class="card-text">Рівень важливості: {{ t.status }}</p>
+                    <p class="card-text">Статус: {{ t.process }}</p>
+                    {% if not t.process == 'in_progress'%}
+                    <p class="card-text">Причина відмови: {{ t.reason }}</p>
+                    {%endif%}
+                    <a href="{% url 'task' t.pk %}" class="btn btn-primary">Повна інформація</a>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ t.title }}</h5>
+                    <p class="card-text">{{ t.description }}</p>
+                    <p class="card-text">Рівень важливості: {{ t.status }}</p>
+                    <p class="card-text">Статус: {{ t.process }}</p>
+                    <p class="card-text">Причина відмови: {{ t.reason }}</p>
+                    <a href="{% url 'task' t.pk %}" class="btn btn-primary">Повна інформація</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p> No tasks there. </p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

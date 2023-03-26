@@ -1,10 +1,12 @@
 {% extends 'task/base.html' %}
 
 {% block content %}
-<h2>Create Comment</h2>
+<h2>Залиште ваш коментар</h2>
+<div class="text-right">
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit</button>
+    <button type="submit" class="btn btn-primary ml-3">Додати коментар</button>
 </form>
+    </div>
 {% endblock %}

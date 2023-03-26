@@ -1,0 +1,11 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+<h2>Відхиленні таски</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Reject</button>
+</form>
+
+{% endblock %}

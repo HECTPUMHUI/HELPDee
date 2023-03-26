@@ -19,3 +19,12 @@
     min-width: 200px;
     font-size: 16px;
 }
+.bg-lows {
+  background-color: rgb(255, 255, 153);
+}
+.bg-mediums {
+  background-color: rgb(255, 194, 102);
+}
+.bg-highs {
+  background-color: rgb(255, 128, 128);
+}

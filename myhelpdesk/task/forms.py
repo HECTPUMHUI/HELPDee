@@ -7,7 +7,6 @@ from .models import *
 class AddTaskForm(forms.Form):
     title = forms.CharField(max_length=255, label="Task Title")
     description = forms.CharField(widget=forms.Textarea(attrs={'cols': 60, 'rows': 10}), label='Description')
-    completed = forms.BooleanField(required=False, initial=True, label='Completed')
     status = forms.ModelChoiceField(queryset=Status.objects.all(), label='Status', empty_label="Status not choised")
     user = forms.ModelChoiceField(queryset=User.objects.none(), empty_label="choise your user")
 
@@ -18,7 +17,7 @@ class AddTaskForm(forms.Form):
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'completed', 'status', 'user']
+        fields = ['title', 'description', 'status', 'user']
 
 
 class CommentForm(forms.ModelForm):
@@ -27,3 +26,14 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+
+
+# test
+class ReasonForm(forms.Form):
+    reason = forms.CharField(widget=forms.Textarea)
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'status']
