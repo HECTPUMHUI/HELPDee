@@ -16,7 +16,7 @@
             {% if task.reason %}
                 <p><b>Причина відхилення:</b> {{ task.reason }}</p>
             {% endif %}
-            {% if user.is_authenticated and user == task.user %}
+            {% if user.is_authenticated and user == task.user or user.is_staff %}
                 {% if task.process == 'in_progress' %}
                     <a href="{% url 'add_comment' task_id=task.id %}" class="btn btn-info">Додати коментар</a>
                 {% endif %}

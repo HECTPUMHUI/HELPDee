@@ -2,9 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
+from rest_framework import generics
 
 from task.forms import AddTaskForm, CommentForm, ReasonForm, TaskForm
 from task.models import Task, Status, RestoreTask
+from task.serializers import TaskSerializer
 
 
 class TaskListView(ListView):
@@ -127,6 +129,7 @@ class RestoreTaskList(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Task
     template_name = 'task/restore_list.html'
     context_object_name = 'restored_tasks'
+
     # paginate_by = 10
 
     def test_func(self):
@@ -150,3 +153,11 @@ def edit_task(request, task_id):
             return redirect('task', task_id)
         else:
             return render(request, 'task/edit_task.html', {'form': form, 'task_id': task_id})
+
+
+# !!!!!!!!!!!!!!!!!!! REST !!!!!!!!!!!!!!!!!!!!
+
+
+class TaskAPIView(generics.ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
