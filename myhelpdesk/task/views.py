@@ -1,12 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.forms import model_to_dict
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from task.forms import AddTaskForm, CommentForm, ReasonForm, TaskForm
 from task.models import Task, Status, RestoreTask
 from task.serializers import TaskSerializer
+from user.models import User
 
 
 class TaskListView(ListView):
@@ -157,7 +161,25 @@ def edit_task(request, task_id):
 
 # !!!!!!!!!!!!!!!!!!! REST !!!!!!!!!!!!!!!!!!!!
 
+class TaskAPIView(APIView):
+    def get(self, request):
+        task_list = Task.objects.all().values()
+        return Response({'tasks': list(task_list)})
 
-class TaskAPIView(generics.ListAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    def post(self, request):
+        user_id = request.data['user_id']
+        user = User.objects.get(pk=user_id)
+
+        new_task = Task.objects.create(
+            title=request.data['title'],
+            description=request.data['description'],
+            status_id=request.data['status_id'],
+            user=user
+
+        )
+
+        return Response({'task': model_to_dict(new_task)})
+
+# class TaskAPIView(generics.ListAPIView):
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
