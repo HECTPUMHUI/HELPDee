@@ -14,6 +14,9 @@ from user.models import User
 
 
 class TaskListView(ListView):
+    """
+    give all tasks for user on main page, and all task if you admin
+    """
     model = Task
     template_name = 'task/index.html'
     context_object_name = 'tasks'
@@ -21,7 +24,10 @@ class TaskListView(ListView):
     # paginate_by = 6
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(hidden=False)
+        if self.request.user.is_superuser:
+            queryset = super().get_queryset().filter(hidden=False)
+        else:
+            queryset = super().get_queryset().filter(hidden=False, user=self.request.user.id)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -33,6 +39,9 @@ class TaskListView(ListView):
 
 
 class ShowTask(LoginRequiredMixin, DetailView):
+    """
+    Show a task details
+    """
     model = Task
     template_name = 'task/task.html'
     pk_url_kwarg = 'task_id'
@@ -49,6 +58,9 @@ class ShowTask(LoginRequiredMixin, DetailView):
 
 
 def add_task(request):
+    """
+    this func add new task
+    """
     if request.method == 'POST':
         form = AddTaskForm(request.POST, user=request.user)
         if form.is_valid():
@@ -66,10 +78,17 @@ def add_task(request):
 
 
 def show_status(request, status_id):
-    tasks = Task.objects.filter(status_id=status_id)
+    """
+    this func view task about status
+    """
+    if request.user.is_superuser:
+        tasks = Task.objects.filter(status_id=status_id)
+    else:
+        tasks = Task.objects.filter(status_id=status_id, user=request.user.id)
     stats = Status.objects.all()
 
     if len(tasks) == 0:
+        # if task with some status absent, we gave 404 page
         raise Http404()
 
     context = {
@@ -83,6 +102,9 @@ def show_status(request, status_id):
 
 
 def add_comment(request, task_id):
+    """
+    this task for comment under task
+    """
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -99,6 +121,9 @@ def add_comment(request, task_id):
 
 # test
 def task_accept(request, task_id):
+    """
+    func for admin, he can accept task adn task give process - accepted
+    """
     task = get_object_or_404(Task, id=task_id)
     task.process = 'accepted'
     task.hidden = False
@@ -107,6 +132,10 @@ def task_accept(request, task_id):
 
 
 def task_reject(request, task_id):
+    """
+        func for admin, he can reject task and task give process - rejected and add comment for reason
+
+    """
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
         form = ReasonForm(request.POST)
@@ -121,6 +150,9 @@ def task_reject(request, task_id):
 
 
 def task_restore(request, task_id):
+    """
+     user can restore his task, after admin rejected task
+     """
     task = get_object_or_404(Task, id=task_id)
     task.process = 'process of recovery'
     task.hidden = True
@@ -130,6 +162,9 @@ def task_restore(request, task_id):
 
 
 class RestoreTaskList(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    class for restored task, were admin can accept or not
+    """
     model = Task
     template_name = 'task/restore_list.html'
     context_object_name = 'restored_tasks'
@@ -146,6 +181,9 @@ class RestoreTaskList(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 def edit_task(request, task_id):
+    """
+    this func add edit opportunity
+    """
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'GET':
         form = TaskForm(instance=task)
@@ -162,24 +200,35 @@ def edit_task(request, task_id):
 # !!!!!!!!!!!!!!!!!!! REST !!!!!!!!!!!!!!!!!!!!
 
 class TaskAPIView(APIView):
-    def get(self, request):
-        task_list = Task.objects.all().values()
-        return Response({'tasks': list(task_list)})
+    """
+    this class for output tasks with input status
+    """
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
 
-    def post(self, request):
-        user_id = request.data['user_id']
-        user = User.objects.get(pk=user_id)
+    def get(self, request, *args, **kwargs):
+        """
+        in this func we filtered data if we give a status number
+        """
+        status = request.query_params.get('status')
+        if status:
+            tasks = Task.objects.filter(status=status)
+        else:
+            tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
 
-        new_task = Task.objects.create(
-            title=request.data['title'],
-            description=request.data['description'],
-            status_id=request.data['status_id'],
-            user=user
 
-        )
+class TaskAPIList(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
 
-        return Response({'task': model_to_dict(new_task)})
 
-# class TaskAPIView(generics.ListAPIView):
-#     queryset = Task.objects.all()
-#     serializer_class = TaskSerializer
+class TaskAPIUpdate(generics.UpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class TaskAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer

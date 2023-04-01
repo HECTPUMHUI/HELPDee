@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from rest_framework.authtoken.models import Token
 
 from .forms import SignUpForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
@@ -41,5 +42,7 @@ def login_view(request):
 
 
 def logout_user(request):
-    logout(request)
+    if request.user.is_authenticated:
+        Token.objects.filter(user=request.user).delete()
+        logout(request)
     return redirect('index')

@@ -13,7 +13,4 @@ urlpatterns = [
     path('task/<int:task_id>/restore/', task_restore, name='task_restore'),
     path('tasks/restore/', RestoreTaskList.as_view(), name='restored_tasks'),
     path('task/<int:task_id>/edit/', edit_task, name='edit_task'),
-    # rest
-
-
 ]
