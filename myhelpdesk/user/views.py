@@ -11,6 +11,7 @@ def register(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            token, created = Token.objects.get_or_create(user=user)
             msg = 'user created'
             return redirect('login_view')
         else:
@@ -30,9 +31,11 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None and user.is_admin:
                 login(request, user)
+                token, created = Token.objects.get_or_create(user=user)
                 return redirect('index')
             elif user is not None and user.is_user:
                 login(request, user)
+                token, created = Token.objects.get_or_create(user=user)
                 return redirect('index')
             else:
                 msg = 'invalid credentials'

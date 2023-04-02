@@ -1,3 +1,6 @@
+"""
+view for Task app
+"""
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.forms import model_to_dict
 from django.http import Http404
@@ -30,6 +33,7 @@ class TaskListView(ListView):
             queryset = super().get_queryset().filter(hidden=False, user=self.request.user.id)
         return queryset
 
+    # pylint: disable=no-member
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['stats'] = Status.objects.all()
@@ -64,13 +68,12 @@ def add_task(request):
     if request.method == 'POST':
         form = AddTaskForm(request.POST, user=request.user)
         if form.is_valid():
-            try:
-                task = Task.objects.create(**form.cleaned_data)
-                task.user = request.user
-                task.save()
-                return redirect('index')
-            except:
-                form.add_error(None, '!! Add task error !!')
+            task = Task.objects.create(**form.cleaned_data)
+            task.user = request.user
+            task.save()
+            return redirect('index')
+        else:
+            form.add_error(None, '!! Add task error !!')
 
     else:
         form = AddTaskForm(user=request.user)
@@ -128,12 +131,13 @@ def task_accept(request, task_id):
     task.process = 'accepted'
     task.hidden = False
     task.save()
-    return redirect('task', task_id=task_id)
+    return redirect('index')
 
 
 def task_reject(request, task_id):
     """
-        func for admin, he can reject task and task give process - rejected and add comment for reason
+        func for admin, he can reject task and task give process
+         - rejected and add comment for reason
 
     """
     task = get_object_or_404(Task, id=task_id)
@@ -142,6 +146,8 @@ def task_reject(request, task_id):
         if form.is_valid():
             task.reason = form.cleaned_data['reason']
             task.process = 'rejected'
+            task.hidden = False
+
             task.save()
             return redirect('index')
     else:
@@ -220,15 +226,24 @@ class TaskAPIView(APIView):
 
 
 class TaskAPIList(generics.ListCreateAPIView):
+    """
+    this class for view all task
+    """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
 
 class TaskAPIUpdate(generics.UpdateAPIView):
+    """
+    this class for edit task
+    """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
 
 class TaskAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    this class for edit, delete
+    """
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
